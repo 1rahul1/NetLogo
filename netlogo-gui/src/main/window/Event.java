@@ -35,7 +35,7 @@ public abstract strictfp class Event {
   // troubleshooting - ST 9/8/04
   private Thread raisingThread = null;
 
-  public static boolean logEvents = false;
+  public static boolean logEvents = true;
 
   // this is a map from raiser objects to maps, where the submaps
   // map from event classes to a List of handler objects.  So basically
@@ -145,6 +145,7 @@ public abstract strictfp class Event {
       if (logEvents
           && !name.equals("PeriodicUpdateEvent")
           && !name.equals("InterfaceGlobalEvent")
+          && name.equals("CompileAllEvent")
           ) {
         for (int i = 0; i < oldNestingDepth; i++) {
           System.out.print(' ');
@@ -164,11 +165,15 @@ public abstract strictfp class Event {
       // step 1: using raiser as key, get map back which maps
       // from event class to handlers.  if no such map in cache,
       // create one.
+      if (name.equals("CompileAllEvent")) {
+        System.out.println("raiser: " + readableName(raiser));
+      }
       Map<Class<?>, List<Handler>> events = handlers.get(raiser);
       if (null == events) {
         events = new HashMap<Class<?>, List<Handler>>();
         handlers.put(raiser, events);
       }
+      //System.out.println("from event class to handlers: " + events);
 
       // step 2: using event class as key, get list of handlers.
       // if no such list in cache, create one.
@@ -180,7 +185,7 @@ public abstract strictfp class Event {
         handlersV = findHandlers(findTop(raiser), eventClass);
         events.put(eventClass, handlersV);
       }
-
+      //System.out.println("from event class to handlers: "  + handlersV);
       // step 3: call the beHandledBy() method on every handler we find
       for (Handler handler : handlersV) {
         if (logEvents
@@ -188,6 +193,7 @@ public abstract strictfp class Event {
             // be choked with them, so let's ignore them
             && !name.equals("PeriodicUpdateEvent")
             && !name.equals("InterfaceGlobalEvent")
+            && name.equals("CompileAllEvent")
             ) {
           for (int i = 0; i < nestingDepth; i++) {
             System.out.print(' ');

@@ -64,7 +64,9 @@ class CompilerManager(val workspace: AbstractWorkspace,
     world.realloc()
     compileAll()
     world.clearAll()
-    println("<CompilerManager, handle LoadEndEvent")
+    println("<CompilerManager, handle LoadEndEvent\n\n")
+    println()
+    println()
   }
 
   def handle(e: CompileMoreSourceEvent): Unit = {
@@ -143,7 +145,9 @@ class CompilerManager(val workspace: AbstractWorkspace,
   }
 
   def handle(e: CompileAllEvent): Unit = {
+    println(">CompilerManager, handle CompileAllEvent")
     compileAll()
+    println("<CompilerManager, handle CompileAllEvent")
   }
 
   def handle(e: WidgetAddedEvent): Unit = {
