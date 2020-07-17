@@ -169,14 +169,8 @@ with MenuTab {
  }
 
   def handle(e: WindowEvents.CompiledEvent) = {
-    printHandleCompiledEvent(e, "CodeTab")
-    try {
-      //throw new Exception("my exception")
-    }
-    catch {
-     case e: Exception =>
-       e.printStackTrace()
-    }
+    //aab printHandleCompiledEvent(e, "CodeTab")
+    // tried stack trace where
     dirty = false
     if (e.sourceOwner == this) errorLabel.setError(e.error, headerSource.length)
     // this was needed to get extension colorization showing up reliably in the editor area - RG 23/3/16
@@ -219,7 +213,7 @@ with MenuTab {
   private object CompileAction extends AbstractAction(I18N.gui.get("tabs.code.checkButton")) {
     putValue(Action.SMALL_ICON, icon("/images/check-gray.gif"))
     def actionPerformed(e: ActionEvent) = {
-      println("    CompileAction * perform * in CodeTab")
+      println("*** CompileAction actionPerformed in CodeTab")
       compile()
     }
     def setDirty(isDirty: Boolean) = {

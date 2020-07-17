@@ -140,18 +140,24 @@ public abstract strictfp class Event {
       }
       Class<? extends Event> eventClass = getClass();
       String name = eventName(this);
+      String raiserName = readableName(raiser);
+      Boolean aabDebug = logEvents
+                         && name.equals("CompileAllEvent")
+                         && raiserName.equals("org.nlogo.app.codetab.MainCodeTab");
+
       // if we logged these event types, the log would be choked
       // with them, so let's ignore them
       if (logEvents
           && !name.equals("PeriodicUpdateEvent")
           && !name.equals("InterfaceGlobalEvent")
-          && name.equals("CompileAllEvent")
           ) {
         for (int i = 0; i < oldNestingDepth; i++) {
           System.out.print(' ');
         }
-        System.out.println("raising " + name + ": " + readableName(raiser));
-      }
+        if (aabDebug) {
+          System.out.println("raising " + name + ": " + readableName(raiser));
+        }
+      } 
       if (raiser == null) {
         throw new IllegalStateException
             ("event raised with null raiser");
@@ -165,8 +171,8 @@ public abstract strictfp class Event {
       // step 1: using raiser as key, get map back which maps
       // from event class to handlers.  if no such map in cache,
       // create one.
-      if (name.equals("CompileAllEvent")) {
-        System.out.println("raiser: " + readableName(raiser));
+      if (aabDebug) {
+        System.out.println("raiser: " + raiserName);
       }
       Map<Class<?>, List<Handler>> events = handlers.get(raiser);
       if (null == events) {
