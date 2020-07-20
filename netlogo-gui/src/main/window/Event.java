@@ -35,7 +35,7 @@ public abstract strictfp class Event {
   // troubleshooting - ST 9/8/04
   private Thread raisingThread = null;
 
-  public static boolean logEvents = true;
+  public static boolean logEvents = false;
 
   // this is a map from raiser objects to maps, where the submaps
   // map from event classes to a List of handler objects.  So basically
@@ -140,11 +140,6 @@ public abstract strictfp class Event {
       }
       Class<? extends Event> eventClass = getClass();
       String name = eventName(this);
-      String raiserName = readableName(raiser);
-      Boolean aabDebug = logEvents
-                         && name.equals("CompileAllEvent")
-                         && raiserName.equals("org.nlogo.app.codetab.MainCodeTab");
-
       // if we logged these event types, the log would be choked
       // with them, so let's ignore them
       if (logEvents
@@ -154,9 +149,7 @@ public abstract strictfp class Event {
         for (int i = 0; i < oldNestingDepth; i++) {
           System.out.print(' ');
         }
-        if (aabDebug) {
-          System.out.println("raising " + name + ": " + readableName(raiser));
-        }
+        System.out.println("raising " + name + ": " + readableName(raiser));
       }
       if (raiser == null) {
         throw new IllegalStateException
@@ -171,15 +164,11 @@ public abstract strictfp class Event {
       // step 1: using raiser as key, get map back which maps
       // from event class to handlers.  if no such map in cache,
       // create one.
-      if (aabDebug) {
-        System.out.println("raiser: " + raiserName);
-      }
       Map<Class<?>, List<Handler>> events = handlers.get(raiser);
       if (null == events) {
         events = new HashMap<Class<?>, List<Handler>>();
         handlers.put(raiser, events);
       }
-      //System.out.println("from event class to handlers: " + events);
 
       // step 2: using event class as key, get list of handlers.
       // if no such list in cache, create one.
@@ -191,7 +180,7 @@ public abstract strictfp class Event {
         handlersV = findHandlers(findTop(raiser), eventClass);
         events.put(eventClass, handlersV);
       }
-      //System.out.println("from event class to handlers: "  + handlersV);
+
       // step 3: call the beHandledBy() method on every handler we find
       for (Handler handler : handlersV) {
         if (logEvents
@@ -199,15 +188,12 @@ public abstract strictfp class Event {
             // be choked with them, so let's ignore them
             && !name.equals("PeriodicUpdateEvent")
             && !name.equals("InterfaceGlobalEvent")
-
             ) {
           for (int i = 0; i < nestingDepth; i++) {
             System.out.print(' ');
           }
-          if (aabDebug) {
-            System.out.println("handling " + eventName(this)
-                + ": " + readableName(handler));
-              }
+          System.out.println("handling " + eventName(this)
+              + ": " + readableName(handler));
         }
         beHandledBy(handler);
       }
@@ -237,30 +223,22 @@ public abstract strictfp class Event {
   //      NetLogo agent monitors are rooted in Window
 
   private java.awt.Component findTop(Object top) {
-    System.out.println();
-    System.out.println("** bottom: " + readableName(top));
-
-    Boolean doDebug = readableName(top).equals("org.nlogo.app.codetab.MainCodeTab");
     while (top != null) {
       java.awt.Component parent = null;
       if (top instanceof Event.LinkChild) {
         Object linkParent = ((Event.LinkChild) top).getLinkParent();
-        System.out.println("linkParent: " + readableName(linkParent));
         while (linkParent != null && !(linkParent instanceof java.awt.Component)) {
           linkParent = ((Event.LinkChild) linkParent).getLinkParent();
-          System.out.println("linkParent: " + readableName(linkParent));
         }
         parent = (java.awt.Component) linkParent;
       } else if (top instanceof java.awt.Component && !(top instanceof java.awt.Window)) {
         parent = ((java.awt.Component) top).getParent();
-        System.out.println("Parent: " + readableName(parent));
       }
       if (null == parent) {
         break;
       }
       top = parent;
     }
-    System.out.println("**top: " + readableName(top) + "\n");
     return (java.awt.Component) top;
   }
 
