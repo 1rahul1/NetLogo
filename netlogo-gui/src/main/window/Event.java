@@ -157,7 +157,7 @@ public abstract strictfp class Event {
         if (aabDebug) {
           System.out.println("raising " + name + ": " + readableName(raiser));
         }
-      } 
+      }
       if (raiser == null) {
         throw new IllegalStateException
             ("event raised with null raiser");
@@ -199,13 +199,15 @@ public abstract strictfp class Event {
             // be choked with them, so let's ignore them
             && !name.equals("PeriodicUpdateEvent")
             && !name.equals("InterfaceGlobalEvent")
-            && name.equals("CompileAllEvent")
+
             ) {
           for (int i = 0; i < nestingDepth; i++) {
             System.out.print(' ');
           }
-          System.out.println("handling " + eventName(this)
-              + ": " + readableName(handler));
+          if (aabDebug) {
+            System.out.println("handling " + eventName(this)
+                + ": " + readableName(handler));
+              }
         }
         beHandledBy(handler);
       }
@@ -235,22 +237,30 @@ public abstract strictfp class Event {
   //      NetLogo agent monitors are rooted in Window
 
   private java.awt.Component findTop(Object top) {
+    System.out.println();
+    System.out.println("** bottom: " + readableName(top));
+
+    Boolean doDebug = readableName(top).equals("org.nlogo.app.codetab.MainCodeTab");
     while (top != null) {
       java.awt.Component parent = null;
       if (top instanceof Event.LinkChild) {
         Object linkParent = ((Event.LinkChild) top).getLinkParent();
+        System.out.println("linkParent: " + readableName(linkParent));
         while (linkParent != null && !(linkParent instanceof java.awt.Component)) {
           linkParent = ((Event.LinkChild) linkParent).getLinkParent();
+          System.out.println("linkParent: " + readableName(linkParent));
         }
         parent = (java.awt.Component) linkParent;
       } else if (top instanceof java.awt.Component && !(top instanceof java.awt.Window)) {
         parent = ((java.awt.Component) top).getParent();
+        System.out.println("Parent: " + readableName(parent));
       }
       if (null == parent) {
         break;
       }
       top = parent;
     }
+    System.out.println("**top: " + readableName(top) + "\n");
     return (java.awt.Component) top;
   }
 
