@@ -92,9 +92,8 @@ class CompilerManager(val workspace: AbstractWorkspace,
   def handle(e: InterfaceGlobalEvent): Unit = {
     val widget = e.widget
     globalWidgets += e.widget
-    if (e.nameChanged) {
+    if (e.nameChanged)
       compileAll()
-    }
     // this check is needed because it might be a brand new widget
     // that doesn't have a variable yet - ST 3/3/04
     else if (world.observerOwnsIndexOf(widget.name.toUpperCase) != -1) {
@@ -135,7 +134,6 @@ class CompilerManager(val workspace: AbstractWorkspace,
   }
 
   def handle(e: CompileAllEvent): Unit = {
-    println(">CompilerManager, handle CompileAllEvent")
     compileAll()
   }
 
