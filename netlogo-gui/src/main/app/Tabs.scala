@@ -168,8 +168,7 @@ class Tabs(val workspace:       GUIWorkspace,
 
 
   def handle(e: CompiledEvent) = {
-     //printHandleCompiledEvent(e, "Tabs")
-
+     printHandleCompiledEvent(e, "Tabs")
     val errorColor = Color.RED
     def clearErrors() = forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
     def recolorTab(component: Component, hasError: Boolean): Unit =

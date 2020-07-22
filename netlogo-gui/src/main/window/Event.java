@@ -181,6 +181,22 @@ public abstract strictfp class Event {
         events.put(eventClass, handlersV);
       }
 
+
+      // step 3: call the beHandledBy() method on every handler we find
+      if (name.equals("CompiledEvent")) {
+        for (int i = 0; i < nestingDepth; i++) {
+          System.out.print(' ');
+        }
+        System.out.println("handling " + eventName(this) + ": " );
+
+        for (Handler handler : handlersV) {
+          for (int i = 0; i < nestingDepth; i++) {
+            System.out.print(' ');
+          }
+          System.out.println("   " + readableName(handler));
+        }
+      }
+
       // step 3: call the beHandledBy() method on every handler we find
       for (Handler handler : handlersV) {
         if (logEvents

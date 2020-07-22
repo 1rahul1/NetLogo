@@ -169,8 +169,8 @@ with MenuTab {
  }
 
   def handle(e: WindowEvents.CompiledEvent) = {
-    //aab printHandleCompiledEvent(e, "CodeTab")
-    // tried stack trace where
+    printHandleCompiledEvent(e, "CodeTab")
+    println("     is instance of MainCodeTab: " + this.isInstanceOf[MainCodeTab])
     dirty = false
     if (e.sourceOwner == this) errorLabel.setError(e.error, headerSource.length)
     // this was needed to get extension colorization showing up reliably in the editor area - RG 23/3/16
