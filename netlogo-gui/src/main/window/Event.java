@@ -185,6 +185,7 @@ public abstract strictfp class Event {
       if (name.equals("CompiledEvent")) {
         System.out.println("Event raiser: " + readableName(raiser));
         System.out.println("Event name: " + name);
+        System.out.println("Event class: " + eventClass);
         System.out.println("Event handlers: " );
         for (Handler handler : handlersV) {
           System.out.println("   " + readableName(handler));
@@ -261,14 +262,14 @@ public abstract strictfp class Event {
     if (top instanceof java.awt.Container) {
       java.awt.Component[] comps = ((java.awt.Container) top).getComponents();
       if (false && comps.length > 0) {
-        System.out.println(" findHandlers parent: " + readableName(top)
+        System.out.println(" findHandlers Container parent: " + readableName(top)
           + ", number of children: " + comps.length);
         for (int i = 0; i < comps.length; i++) {
           System.out.println("   child: " + readableName(comps[i]));
         }
       }
       for (int i = 0; i < comps.length; i++) {
-        if (readableName(comps[i]).equals("org.nlogo.app.codetab.MainCodeTab")) {
+        if (false && readableName(comps[i]).equals("org.nlogo.app.codetab.MainCodeTab")) {
           System.out.println(" findHandlers top: " + readableName(top));
           System.out.println("   component: " + readableName(comps[i]));
           List<Handler> handlers = findHandlers(comps[i], eventClass);
@@ -288,8 +289,8 @@ public abstract strictfp class Event {
     if (top instanceof Event.LinkParent) {
       Object[] objs = ((Event.LinkParent) top).getLinkChildren();
       // some parents don't have children, should fix them
-      if (objs.length > 0) {
-        System.out.println(" findHandlers parent: " + readableName(top)
+      if (false && objs.length > 0) {
+        System.out.println(" findHandlers Link parent: " + readableName(top)
           + ", number of children: " + objs.length);
         for (int i = 0; i < objs.length; i++) {
           System.out.println("   child: " + readableName(objs[i]));
@@ -339,6 +340,11 @@ public abstract strictfp class Event {
         }
         handlerClass = handlerClass.getSuperclass();
       }
+    }
+    if (readableName(comp).equals("org.nlogo.app.codetab.MainCodeTab") &&
+      eventsHandled.contains(eventClass) ) {
+      System.out.println(readableName(comp) + " isHandler for "  +
+      "eventClass: " + eventClass);
     }
     return eventsHandled.contains(eventClass);
   }

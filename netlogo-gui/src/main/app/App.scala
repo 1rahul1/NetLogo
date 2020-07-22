@@ -2,13 +2,11 @@
 
 package org.nlogo.app
 
-//import org.nlogo.awt.Tree
 import javax.swing.{ JOptionPane, JMenu }
 import java.awt.event.ActionEvent
 
 import org.nlogo.agent.{ Agent, World2D, World3D }
 import java.awt.{ Dimension, Frame, Toolkit }
-import java.awt.Component
 import org.nlogo.api._
 import org.nlogo.app.codetab.{ ExternalFileManager, TemporaryCodeTab }
 import org.nlogo.app.common.{ CodeToHtml, Events => AppEvents, FileActions, FindDialog, SaveModelingCommonsAction }
@@ -150,7 +148,6 @@ object App{
     pico.add("org.nlogo.app.interfacetab.CommandCenter")
     pico.add("org.nlogo.app.interfacetab.InterfaceTab")
     pico.addComponent(classOf[Tabs])
-    pico.addComponent(classOf[MainCodeTabPanel])
     pico.addComponent(classOf[AgentMonitorManager])
     app = pico.getComponent(classOf[App])
     // It's pretty silly, but in order for the splash screen to show up
@@ -255,11 +252,7 @@ class App extends
   def workspace = _workspace
   lazy val owner = new SimpleJobOwner("App", workspace.world.mainRNG, AgentKind.Observer)
   private var _tabs: Tabs = null
-  private var _mainCodeTabPanel: MainCodeTabPanel = null
-  private var _tabManager : AppTabManager= null
   def tabs = _tabs
-  def mainCodeTabPanel = _mainCodeTabPanel
-  def tabManager = _tabManager
   var menuBar: MenuBar = null
   var _fileManager: FileManager = null
   var monitorManager: AgentMonitorManager = null
@@ -384,10 +377,6 @@ class App extends
 
     _tabs = pico.getComponent(classOf[Tabs])
     controlSet.tabs = Some(_tabs)
-    _mainCodeTabPanel = pico.getComponent(classOf[MainCodeTabPanel])
-    _tabManager = new AppTabManager(_tabs, _mainCodeTabPanel)
-    _mainCodeTabPanel.setTabManager(_tabManager)
-    _tabs.setTabManager(_tabManager)
 
     pico.addComponent(tabs.interfaceTab.getInterfacePanel)
     frame.getContentPane.add(tabs, java.awt.BorderLayout.CENTER)
@@ -409,12 +398,13 @@ class App extends
   }
 
   private def finishStartup(appHandler: Object) {
-    println("<finishStartup")
+    println(">AppfinishStartup")
     val app = pico.getComponent(classOf[App])
     val currentModelAsString = {() =>
       val modelSaver = pico.getComponent(classOf[ModelSaver])
       modelSaver.modelAsString(modelSaver.currentModel, ModelReader.modelSuffix)
     }
+
     pico.add(classOf[ModelingCommonsInterface],
           "org.nlogo.mc.ModelingCommons",
           Array[Parameter] (
@@ -437,18 +427,22 @@ class App extends
       new ConstantParameter(titler))
     dirtyMonitor = pico.getComponent(classOf[DirtyMonitor])
     frame.addLinkComponent(dirtyMonitor)
+
     val menuBar = pico.getComponent(classOf[MenuBar])
+
     pico.add(classOf[FileManager],
       "org.nlogo.app.FileManager",
       new ComponentParameter(), new ComponentParameter(), new ComponentParameter(),
       new ComponentParameter(), new ComponentParameter(),
       new ConstantParameter(menuBar), new ConstantParameter(menuBar))
     setFileManager(pico.getComponent(classOf[FileManager]))
+
     val viewManager = pico.getComponent(classOf[GLViewManagerInterface])
     workspace.init(viewManager)
     frame.addLinkComponent(viewManager)
+
     tabs.init(fileManager, dirtyMonitor, Plugins.load(pico): _*)
-    mainCodeTabPanel.init(fileManager, dirtyMonitor, Plugins.load(pico): _*)
+
     app.setMenuBar(menuBar)
     frame.setJMenuBar(menuBar)
 
@@ -460,6 +454,7 @@ class App extends
     // has been realized, the NetLogo event system won't work.
     //  - ST 8/16/03
     frame.pack()
+
     loadDefaultModel()
     // smartPack respects the command center's current size, rather
     // than its preferred size, so we have to explicitly set the
@@ -476,8 +471,7 @@ class App extends
     if (isMac) {
       appHandler.getClass.getDeclaredMethod("ready", classOf[AnyRef]).invoke(appHandler, this)
     }
-    frame.addLinkComponent(mainCodeTabPanel.getCodeTabContainer
-    println("<finishStartup done")
+    println(">AppfinishStartup")
   }
 
   def startLogging(loggingConfigPath: String) {
@@ -580,17 +574,12 @@ class App extends
       }
 
     }
-    else {
-      // println("    >App load new model")
-      fileManager.newModel()
-      // println("    <App load new model")
-    }
+    else fileManager.newModel()
   }
 
   /// zooming
 
   def handle(e: ZoomedEvent) {
-        //  println("   App handle ZoomedEvent")
     smartPack(frame.getPreferredSize, false)
   }
 
@@ -670,7 +659,6 @@ class App extends
    * Internal use only.
    */
   def handle(e: AppEvent) {
-    //  println("   >App handle AppEvent")
     import AppEventType._
     e.`type` match {
       case RELOAD => reload()
@@ -691,7 +679,6 @@ class App extends
           logger.deleteSessionFiles()
       case _ =>
     }
-  //  println("   <App handle AppEvent")
   }
 
   private def reload() {
@@ -722,20 +709,11 @@ class App extends
   }
 
   ///
-  def printComponent(cmp: Component, description: String): Unit = {
-    val pattern = """(^.*)\[(.*$)""".r
-    val pattern(name, _) = cmp.toString
-    val shortName = name.split("\\.").last
-    println(description + System.identityHashCode(cmp) +
-     ", " + shortName)
-  }
+
   /**
    * Internal use only.
    */
   final def handle(e: AppEvents.SwitchedTabsEvent): Unit = {
-    println("   App handle SwitchedTabsEvent")
-    printComponent(e.oldTab, "      old tab: ")
-    printComponent(e.newTab, "      new tab: ")
     if (e.newTab == tabs.interfaceTab) {
       monitorManager.showAll()
       frame.toFront()
@@ -759,7 +737,6 @@ class App extends
    * Internal use only.
    */
   def handle(e: ModelSavedEvent): Unit = {
-    println("   >App handle ModelSavedEvent")
     workspace.modelSaved(e.modelPath)
     errorDialogManager.setModelName(workspace.modelNameForDisplay)
     if (AbstractWorkspace.isApp) {
@@ -768,20 +745,16 @@ class App extends
         manager.setTitle(workspace.modelNameForDisplay, workspace.getModelDir, workspace.getModelType)
       }
     }
-    println("   <App handle ModelSavedEvent")
   }
 
   /**
    * Internal use only.
    */
   def handle(e: LoadBeginEvent): Unit = {
-    //  println("   >App handle LoadBeginEvent")
     val modelName = workspace.modelNameForDisplay
     errorDialogManager.setModelName(modelName)
     if(AbstractWorkspace.isApp) frame.setTitle(modelTitle)
-    //  println("     =App foreach(_.closeClientEditor) LoadBeginEvent")
     workspace.hubNetManager.foreach(_.closeClientEditor())
-    //  println("   <App handle LoadBeginEvent")
   }
 
   private var wasAtPreferredSizeBeforeLoadBegan = false
@@ -791,12 +764,10 @@ class App extends
    * Internal use only.
    */
   def handle(e: BeforeLoadEvent) {
-    //  println("   >App handle BeforeLoadEvent")
     wasAtPreferredSizeBeforeLoadBegan =
             preferredSizeAtLoadEndTime == null ||
             frame.getSize == preferredSizeAtLoadEndTime ||
             frame.getSize == frame.getPreferredSize
-    //  println("   <App handle BeforeLoadEvent")
   }
 
   private lazy val _turtleShapesManager: ShapesManagerInterface = {
@@ -813,7 +784,6 @@ class App extends
    * Internal use only.
    */
   def handle(e: LoadEndEvent) {
-    //  println("   >App handle LoadEndEvent")
     turtleShapesManager.reset()
     linkShapesManager.reset()
     workspace.view.repaint()
@@ -821,14 +791,9 @@ class App extends
     if(AbstractWorkspace.isApp){
       // if we don't call revalidate() here we don't get up-to-date
       // preferred size information - ST 11/4/03
-      //  println("     =App AbstractWorkspace.isApp")
       tabs.interfaceTab.getInterfacePanel.revalidate()
-      if(wasAtPreferredSizeBeforeLoadBegan) {
-        //  println("     =App smartPack - wasAtPreferredSizeBeforeLoadBegan")
-        smartPack(frame.getPreferredSize, true)
-      }
+      if(wasAtPreferredSizeBeforeLoadBegan) smartPack(frame.getPreferredSize, true)
       else{
-        //  println("     =App not wasAtPreferredSizeBeforeLoadBegan")
         val currentSize = frame.getSize
         val preferredSize = frame.getPreferredSize
         var newWidth = currentSize.width
@@ -837,12 +802,10 @@ class App extends
         if(preferredSize.height > newHeight) newHeight = preferredSize.height
         if(newWidth != currentSize.width || newHeight != currentSize.height) smartPack(new Dimension(newWidth, newHeight), true)
       }
-      //  println("     =App frame.getPreferredSize()")
       preferredSizeAtLoadEndTime = frame.getPreferredSize()
     }
     frame.toFront()
     tabs.interfaceTab.requestFocus()
-    //  println("   <App handle LoadEndEvent")
   }
 
   /**
@@ -881,7 +844,6 @@ class App extends
    * Internal use only.
    */
   def handle(t: Throwable): Unit = {
-    println("   App handle Throwable")
     try {
       val logo = t.isInstanceOf[LogoException]
       if (! logo) {
