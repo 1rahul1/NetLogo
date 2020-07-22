@@ -36,7 +36,6 @@ public abstract strictfp class Event {
   private Thread raisingThread = null;
 
   public static boolean logEvents = false;
-
   // this is a map from raiser objects to maps, where the submaps
   // map from event classes to a List of handler objects.  So basically
   // it's table where you get a list of handler objects by doing lookup
@@ -184,15 +183,10 @@ public abstract strictfp class Event {
 
       // step 3: call the beHandledBy() method on every handler we find
       if (name.equals("CompiledEvent")) {
-        for (int i = 0; i < nestingDepth; i++) {
-          System.out.print(' ');
-        }
-        System.out.println("handling " + eventName(this) + ": " );
-
+        System.out.println("Event raiser: " + readableName(raiser));
+        System.out.println("Event name: " + name);
+        System.out.println("Event handlers: " );
         for (Handler handler : handlersV) {
-          for (int i = 0; i < nestingDepth; i++) {
-            System.out.print(' ');
-          }
           System.out.println("   " + readableName(handler));
         }
       }
@@ -262,6 +256,17 @@ public abstract strictfp class Event {
     List<Handler> result = new ArrayList<Handler>();
     if (top instanceof java.awt.Container) {
       java.awt.Component[] comps = ((java.awt.Container) top).getComponents();
+      for (int i = 0; i < comps.length; i++) {
+        List<Handler> handlers = findHandlers(comps[i], eventClass);
+        for (Handler handler : handlers) {
+          if (readableName(handler).equals("org.nlogo.app.codetab.MainCodeTab")) {
+            System.out.println(" findHandlers top: " + readableName(top));
+            System.out.println("   component: " + readableName(comps[i]));
+            System.out.println("   handler: " + readableName(handler));
+          }
+        }
+      }
+
       for (int i = 0; i < comps.length; i++) {
         result.addAll(findHandlers(comps[i], eventClass));
       }
