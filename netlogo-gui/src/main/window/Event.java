@@ -182,7 +182,7 @@ public abstract strictfp class Event {
 
 
       // step 3: call the beHandledBy() method on every handler we find
-      if (name.equals("CompiledEvent")) {
+      if (false && name.equals("CompiledEvent")) {
         System.out.println("Event raiser: " + readableName(raiser));
         System.out.println("Event name: " + name);
         System.out.println("Event handlers: " );
@@ -236,9 +236,12 @@ public abstract strictfp class Event {
     while (top != null) {
       java.awt.Component parent = null;
       if (top instanceof Event.LinkChild) {
+        // System.out.println(" findTop child: " + readableName(top));
         Object linkParent = ((Event.LinkChild) top).getLinkParent();
+        // System.out.println("   parent: " + readableName(linkParent));
         while (linkParent != null && !(linkParent instanceof java.awt.Component)) {
           linkParent = ((Event.LinkChild) linkParent).getLinkParent();
+          //System.out.println("   parent: " + readableName(linkParent));
         }
         parent = (java.awt.Component) linkParent;
       } else if (top instanceof java.awt.Component && !(top instanceof java.awt.Window)) {
@@ -259,7 +262,7 @@ public abstract strictfp class Event {
       for (int i = 0; i < comps.length; i++) {
         List<Handler> handlers = findHandlers(comps[i], eventClass);
         for (Handler handler : handlers) {
-          if (readableName(handler).equals("org.nlogo.app.codetab.MainCodeTab")) {
+          if (false &&readableName(handler).equals("org.nlogo.app.codetab.MainCodeTab")) {
             System.out.println(" findHandlers top: " + readableName(top));
             System.out.println("   component: " + readableName(comps[i]));
             System.out.println("   handler: " + readableName(handler));
@@ -273,7 +276,9 @@ public abstract strictfp class Event {
     }
     if (top instanceof Event.LinkParent) {
       Object[] objs = ((Event.LinkParent) top).getLinkChildren();
+      // System.out.println(" findHandlers parent: " + readableName(top));
       for (int i = 0; i < objs.length; i++) {
+        //System.out.println("   child: " + readableName(objs[i]));
         result.addAll(findHandlers(objs[i], eventClass));
       }
     }
