@@ -171,9 +171,13 @@ with MenuTab {
   def handle(e: WindowEvents.CompiledEvent) = {
     printHandleCompiledEvent(e, "CodeTab")
     dirty = false
-    if (e.sourceOwner == this) errorLabel.setError(e.error, headerSource.length)
+    if (e.sourceOwner == this) {
+      println("  errorLabel.setError")
+      errorLabel.setError(e.error, headerSource.length)
+    }
     // this was needed to get extension colorization showing up reliably in the editor area - RG 23/3/16
     text.revalidate()
+    println("<CodeTab CompiledEvent")
   }
 
   protected def compile(): Unit = new WindowEvents.CompileAllEvent().raise(this)

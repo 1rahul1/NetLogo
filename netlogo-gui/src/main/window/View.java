@@ -339,6 +339,7 @@ public strictfp class View
 
   public void handle(org.nlogo.window.Events.CompiledEvent e) {
     if (e.sourceOwner instanceof ProceduresInterface) {
+      System.out.println("@View CompiledEvent renderer.resetCache(patchSize())");
       renderer.resetCache(patchSize());
     }
   }

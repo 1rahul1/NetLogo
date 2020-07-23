@@ -170,10 +170,17 @@ class Tabs(val workspace:       GUIWorkspace,
   def handle(e: CompiledEvent) = {
      printHandleCompiledEvent(e, "Tabs")
     val errorColor = Color.RED
-    def clearErrors() = forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
-    def recolorTab(component: Component, hasError: Boolean): Unit =
+    def clearErrors() = {
+      println("  =clear errors")
+      forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
+    }
+    def recolorTab(component: Component, hasError: Boolean): Unit = {
+      println("  =recolorTab, has error: " + hasError)
+      printSwingObject(component, "  =Component")
       setForegroundAt(indexOfComponent(component), if(hasError) errorColor else null)
+    }
     def recolorInterfaceTab() = {
+      println("  =recolorInterfaceTab")
       if (e.error != null) setSelectedIndex(0)
       recolorTab(interfaceTab, e.error != null)
     }
@@ -196,6 +203,7 @@ class Tabs(val workspace:       GUIWorkspace,
         val filename = file.getFileName
         var tab = getTabWithFilename(Right(filename))
         if (!tab.isDefined && e.error != null) {
+          println("  =openExternalFile")
           openExternalFile(filename)
           tab = getTabWithFilename(Right(filename))
           tab.get.handle(e) // it was late to the party, let it handle the event too
@@ -209,6 +217,7 @@ class Tabs(val workspace:       GUIWorkspace,
         recolorInterfaceTab()
       case _ =>
     }
+    println("<Tabs CompiledEvent")
   }
 
   def handle(e: ExternalFileSavedEvent) =
