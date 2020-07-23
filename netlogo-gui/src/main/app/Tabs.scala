@@ -160,11 +160,11 @@ class Tabs(val workspace:       GUIWorkspace,
     }
   }
 
- def printHandleCompiledEvent(e: CompiledEvent, inClass: String): Unit = {
-   println("   >" + inClass + " handle CompiledEvent")
-   println("     error: " + java.util.Objects.toString(e.error, "<null>"))
-   printSwingObject(e.sourceOwner, "     sourceOwner: ")
- }
+  def printHandleCompiledEvent(e: CompiledEvent, inClass: String): Unit = {
+    println(">" + inClass + " handle CompiledEvent")
+    // println("  error: " + java.util.Objects.toString(e.error, "<null>"))
+    printSwingObject(e.sourceOwner, "  sourceOwner: ")
+  }
 
 
   def handle(e: CompiledEvent) = {

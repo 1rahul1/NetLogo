@@ -163,14 +163,13 @@ with MenuTab {
   }
 
  def printHandleCompiledEvent(e: WindowEvents.CompiledEvent, inClass: String): Unit = {
-   println("   >" + inClass + " handle CompiledEvent")
-   println("     error: " + java.util.Objects.toString(e.error, "<null>"))
-   printSwingObject(e.sourceOwner, "     sourceOwner: ")
+   println(">" + inClass + " handle CompiledEvent")
+   // println("  error: " + java.util.Objects.toString(e.error, "<null>"))
+   printSwingObject(e.sourceOwner, "  sourceOwner: ")
  }
 
   def handle(e: WindowEvents.CompiledEvent) = {
     printHandleCompiledEvent(e, "CodeTab")
-    println("     is instance of MainCodeTab: " + this.isInstanceOf[MainCodeTab])
     dirty = false
     if (e.sourceOwner == this) errorLabel.setError(e.error, headerSource.length)
     // this was needed to get extension colorization showing up reliably in the editor area - RG 23/3/16

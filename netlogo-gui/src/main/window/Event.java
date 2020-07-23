@@ -36,6 +36,7 @@ public abstract strictfp class Event {
   private Thread raisingThread = null;
 
   public static boolean logEvents = false;
+
   // this is a map from raiser objects to maps, where the submaps
   // map from event classes to a List of handler objects.  So basically
   // it's table where you get a list of handler objects by doing lookup
@@ -180,18 +181,6 @@ public abstract strictfp class Event {
         events.put(eventClass, handlersV);
       }
 
-
-      // step 3: call the beHandledBy() method on every handler we find
-      if (name.equals("CompiledEvent")) {
-        System.out.println("Event raiser: " + readableName(raiser));
-        System.out.println("Event name: " + name);
-        System.out.println("Event class: " + eventClass);
-        System.out.println("Event handlers: " );
-        for (Handler handler : handlersV) {
-          System.out.println("   " + readableName(handler));
-        }
-      }
-
       // step 3: call the beHandledBy() method on every handler we find
       for (Handler handler : handlersV) {
         if (logEvents
@@ -237,12 +226,9 @@ public abstract strictfp class Event {
     while (top != null) {
       java.awt.Component parent = null;
       if (top instanceof Event.LinkChild) {
-        //System.out.println(" findTop child: " + readableName(top));
         Object linkParent = ((Event.LinkChild) top).getLinkParent();
-        //System.out.println("   parent: " + readableName(linkParent));
         while (linkParent != null && !(linkParent instanceof java.awt.Component)) {
           linkParent = ((Event.LinkChild) linkParent).getLinkParent();
-          //System.out.println("   parent: " + readableName(linkParent));
         }
         parent = (java.awt.Component) linkParent;
       } else if (top instanceof java.awt.Component && !(top instanceof java.awt.Window)) {
@@ -258,43 +244,10 @@ public abstract strictfp class Event {
 
   private List<Handler> findHandlers(Object top, Class<? extends Event> eventClass) {
     List<Handler> result = new ArrayList<Handler>();
-
-    if (top instanceof java.awt.Container) {
-      java.awt.Component[] comps = ((java.awt.Container) top).getComponents();
-      if (false && comps.length > 0) {
-        System.out.println(" findHandlers Container parent: " + readableName(top)
-          + ", number of children: " + comps.length);
-        for (int i = 0; i < comps.length; i++) {
-          System.out.println("   child: " + readableName(comps[i]));
-        }
-      }
-      for (int i = 0; i < comps.length; i++) {
-        if (false && readableName(comps[i]).equals("org.nlogo.app.codetab.MainCodeTab")) {
-          System.out.println(" findHandlers top: " + readableName(top));
-          System.out.println("   component: " + readableName(comps[i]));
-          List<Handler> handlers = findHandlers(comps[i], eventClass);
-          System.out.println(" size of handler list:" + handlers.size());
-          for (Handler handler : handlers) {
-            System.out.println("   handler: " + readableName(handler));
-          }
-        }
-      }
-    }
     if (top instanceof java.awt.Container) {
       java.awt.Component[] comps = ((java.awt.Container) top).getComponents();
       for (int i = 0; i < comps.length; i++) {
         result.addAll(findHandlers(comps[i], eventClass));
-      }
-    }
-    if (top instanceof Event.LinkParent) {
-      Object[] objs = ((Event.LinkParent) top).getLinkChildren();
-      // some parents don't have children, should fix them
-      if (false && objs.length > 0) {
-        System.out.println(" findHandlers Link parent: " + readableName(top)
-          + ", number of children: " + objs.length);
-        for (int i = 0; i < objs.length; i++) {
-          System.out.println("   child: " + readableName(objs[i]));
-        }
       }
     }
     if (top instanceof Event.LinkParent) {
@@ -340,11 +293,6 @@ public abstract strictfp class Event {
         }
         handlerClass = handlerClass.getSuperclass();
       }
-    }
-    if (readableName(comp).equals("org.nlogo.app.codetab.MainCodeTab") &&
-      eventsHandled.contains(eventClass) ) {
-      System.out.println(readableName(comp) + " isHandler for "  +
-      "eventClass: " + eventClass);
     }
     return eventsHandled.contains(eventClass);
   }
