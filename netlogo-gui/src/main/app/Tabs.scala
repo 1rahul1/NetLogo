@@ -169,10 +169,13 @@ class Tabs(val workspace:       GUIWorkspace,
 
   def handle(e: CompiledEvent) = {
      printHandleCompiledEvent(e, "Tabs")
+
     val errorColor = Color.RED
     def clearErrors() = {
       println("  =clear errors")
-      forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
+      def clearForeground(tab: Component) = setForegroundAt(indexOfComponent(tab), null)
+      forAllCodeTabs(clearForeground)
+      //forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
     }
     def recolorTab(component: Component, hasError: Boolean): Unit = {
       println("  =recolorTab, has error: " + hasError)
@@ -211,12 +214,26 @@ class Tabs(val workspace:       GUIWorkspace,
         if (e.error != null) setSelectedComponent(tab.get)
         recolorTab(tab.get, e.error != null)
         requestFocus()
-      case null => // i'm assuming this is only true when we've deleted that last widget. not a great sol'n - AZS 5/16/05
+      case null =>  { // i'm assuming this is only true when we've deleted that last widget.
+        //not a great sol'n - AZS 5/16/05
+        println("null sourceOwner")
         recolorInterfaceTab()
-      case jobWidget: JobWidget if !jobWidget.isCommandCenter =>
+      }
+      case jobWidget: JobWidget if !jobWidget.isCommandCenter => {
+        println("if !jobWidget.isCommandCenter ")
         recolorInterfaceTab()
+      }
+
       case _ =>
     }
+    try {
+      //throw new Exception("my exception")
+    }
+    catch {
+     case e: Exception =>
+       e.printStackTrace()
+    }
+
     println("<Tabs CompiledEvent")
   }
 
@@ -271,9 +288,11 @@ class Tabs(val workspace:       GUIWorkspace,
       if (externalFileTabs.isEmpty) menu.revokeAction(SaveAllAction)
     }
 
-  def forAllCodeTabs(fn: CodeTab => Unit) =
-    (externalFileTabs.asInstanceOf[Set[CodeTab]] + codeTab) foreach fn
-
+    def forAllCodeTabs(fn: CodeTab => Unit) =
+      for (tab <- externalFileTabs.asInstanceOf[Set[CodeTab]] + codeTab)  {
+        printSwingObject(tab, "    forall ")
+        fn
+      }
   def lineNumbersVisible = codeTab.lineNumbersVisible
   def lineNumbersVisible_=(visible: Boolean) = forAllCodeTabs(_.lineNumbersVisible = visible)
 
