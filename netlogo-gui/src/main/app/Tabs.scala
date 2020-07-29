@@ -113,8 +113,10 @@ class Tabs(val workspace:       GUIWorkspace,
 
   override def requestFocus() = currentTab.requestFocus()
 
-  def handle(e: AboutToCloseFilesEvent) =
+  def handle(e: AboutToCloseFilesEvent) = {
+    println("Tabs AboutToCloseFilesEvent")
     OfferSaveExternalsDialog.offer(externalFileTabs filter (_.saveNeeded), this)
+  }
 
   def handle(e: LoadBeginEvent) = {
     setSelectedComponent(interfaceTab)
@@ -237,12 +239,14 @@ class Tabs(val workspace:       GUIWorkspace,
     println("<Tabs CompiledEvent")
   }
 
-  def handle(e: ExternalFileSavedEvent) =
+  def handle(e: ExternalFileSavedEvent) = {
+    println("Tabs ExternalFileSavedEvent")
     getTabWithFilename(Right(e.path)) foreach { tab =>
       val index = indexOfComponent(tab)
       setTitleAt(index, tab.filenameForDisplay)
       tabActions(index).putValue(Action.NAME, e.path)
     }
+  }
 
   def getSource(filename: String): String = getTabWithFilename(Right(filename)).map(_.innerSource).orNull
 
@@ -327,6 +331,7 @@ class Tabs(val workspace:       GUIWorkspace,
 
     @throws(classOf[UserCancelException])
     override def action(): Unit = {
+      println("action() SaveAllAction")
       fileManager.saveModel(false)
       externalFileTabs foreach (_.save(false))
     }

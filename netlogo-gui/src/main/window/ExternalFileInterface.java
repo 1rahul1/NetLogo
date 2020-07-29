@@ -11,6 +11,7 @@ public strictfp class ExternalFileInterface
   private final String fileName;
 
   public ExternalFileInterface(String fileName) {
+    System.out.println("ExternalFileInterface name: " + fileName);
     this.fileName = fileName;
   }
 
