@@ -34,8 +34,8 @@ class FormatterPair[A, B <: ModelFormat[A, B]](
 
     def save(model: Model, uri: URI): Try[URI] = {
       println("ModelLoader, FormatterPair, save")
-      println("   model: " + model)
-      println("   uri: uri")
+      //println("   model: " + model)
+      println("   uri: " + uri)
       modelFormat.save(model, uri, serializers)
     }
 

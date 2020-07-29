@@ -76,6 +76,9 @@ trait AbstractNLogoFormat[A <: ModelFormat[Array[String], A]] extends ModelForma
       "deltatick").map(s => "org.nlogo.modelsection." + s)
 
   def writeSections(sections: Map[String, Array[String]], location: URI): Try[URI] = {
+        println("NLogoFormat, writeSections, uri: " + location)
+        //println("    keys: " + sections.keys)
+        println("    ***code: \n" + sections.apply("org.nlogo.modelsection.code").mkString("\n"))
     Try(Paths.get(location)).flatMap { filePath =>
       sectionsToSource(sections).flatMap { fileText =>
         Try {
