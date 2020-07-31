@@ -12,12 +12,10 @@ class EditorAreaErrorLabel(val editorArea: AbstractEditorArea) extends ErrorLabe
 
     compilerError match {
       case ex: CompilerException =>
-        println("       EditorAreaErrorLabel CompilerException")
         editorArea.select(ex.start - offset, ex.end - offset)
         editorArea.setSelection(false)
         editorArea.requestFocus()
       case _ =>
-         println("       EditorAreaErrorLabel nothing")
         editorArea.setSelection(true)
     }
   }

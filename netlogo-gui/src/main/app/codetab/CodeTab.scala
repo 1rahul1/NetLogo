@@ -36,7 +36,7 @@ with MenuTab {
     _dirty = b
   }
 
- 
+
   private lazy val listener = new TextListener {
     override def textValueChanged(e: TextEvent) = {
       if (e != null) {
@@ -147,9 +147,9 @@ with MenuTab {
   def kind = AgentKind.Observer
 
   def handle(e: AppEvents.SwitchedTabsEvent) = {
-    println("CodeTab handle SwitchedTabsEvent, dirty: " + dirty)
-    printSwingObject(e.oldTab, "  oldTab: ")
-    printSwingObject(this, "  this tab: ")
+    // println("CodeTab handle SwitchedTabsEvent, dirty: " + dirty)
+    // printSwingObject(e.oldTab, "  oldTab: ")
+    // printSwingObject(this, "  this tab: ")
     if (dirty && e.oldTab == this) {
       println("** compile due to SwitchedTabsEvent")
       compile()
@@ -187,15 +187,15 @@ with MenuTab {
  }
 
   def handle(e: WindowEvents.CompiledEvent) = {
-    printHandleCompiledEvent(e, "CodeTab")
+    // printHandleCompiledEvent(e, "CodeTab")
     dirty = false
     if (e.sourceOwner == this) {
-      println("  errorLabel.setError")
+      //println("  errorLabel.setError")
       errorLabel.setError(e.error, headerSource.length)
     }
     // this was needed to get extension colorization showing up reliably in the editor area - RG 23/3/16
     text.revalidate()
-    println("<CodeTab CompiledEvent")
+    //println("<CodeTab CompiledEvent")
   }
 
   protected def compile(): Unit = new WindowEvents.CompileAllEvent().raise(this)

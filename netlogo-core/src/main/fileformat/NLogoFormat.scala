@@ -4,7 +4,7 @@ package org.nlogo.fileformat
 
 import java.net.URI
 import java.nio.file.{ Files, Paths }
-  
+
 import org.nlogo.core.{ Femto, I18N, LiteralParser, Model, ShapeParser,
   UpdateMode, View, Widget, WorldDimensions }
 import org.nlogo.core.model.WidgetReader
@@ -76,9 +76,6 @@ trait AbstractNLogoFormat[A <: ModelFormat[Array[String], A]] extends ModelForma
       "deltatick").map(s => "org.nlogo.modelsection." + s)
 
   def writeSections(sections: Map[String, Array[String]], location: URI): Try[URI] = {
-        println("NLogoFormat, writeSections, uri: " + location)
-        //println("    keys: " + sections.keys)
-        println("    ***code: \n" + sections.apply("org.nlogo.modelsection.code").mkString("\n"))
     Try(Paths.get(location)).flatMap { filePath =>
       sectionsToSource(sections).flatMap { fileText =>
         Try {

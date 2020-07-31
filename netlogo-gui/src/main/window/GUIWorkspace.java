@@ -939,7 +939,6 @@ public abstract strictfp class GUIWorkspace // can't be both abstract and strict
   }
 
   public void handle(org.nlogo.window.Events.CompiledEvent e) {
-    System.out.println("@GUIWorkspace CompiledEvent codeBits.clear");
     codeBits.clear();
   }
 

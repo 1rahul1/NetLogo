@@ -26,7 +26,7 @@ class CompilerManager(val workspace: AbstractWorkspace,
     with WidgetAddedEvent.Handler
     with WidgetRemovedEvent.Handler
     with CompileAllEvent.Handler {
-      println("class CompilerManager, proceduresInterface: " + proceduresInterface)
+      //println("class CompilerManager, proceduresInterface: " + proceduresInterface)
 
   private[window] val widgets       = HashSet[JobOwner]()
   private[window] val globalWidgets = HashSet[InterfaceGlobalWidget]()
@@ -82,11 +82,11 @@ class CompilerManager(val workspace: AbstractWorkspace,
             workspace.getLibraryManager, workspace.getCompilationEnvironment);
         results.head.init(workspace)
         results.head.owner = owner
-        println("** raise CompiledEvent: CompilerManager, CompileMoreSourceEvent")
+        //println("** raise CompiledEvent: CompilerManager, CompileMoreSourceEvent")
         raiseEvent(new CompiledEvent(owner, world.program, results.head, null))
       } catch {
         case error: CompilerException =>
-        println("** raise CompiledEvent, CompilerException: CompilerManager, CompileMoreSourceEvent")
+        //println("** raise CompiledEvent, CompilerException: CompilerManager, CompileMoreSourceEvent")
           raiseEvent(new CompiledEvent(owner, world.program, null, error))
       }
     }
@@ -137,7 +137,7 @@ class CompilerManager(val workspace: AbstractWorkspace,
   }
 
   def handle(e: CompileAllEvent): Unit = {
-    println(" CompilerManager, handle CompileAllEvent")
+    //println(" CompilerManager, handle CompileAllEvent")
     compileAll()
   }
 
@@ -222,12 +222,12 @@ class CompilerManager(val workspace: AbstractWorkspace,
       }
       workspace.init()
       world.program(results.program)
-      println("** raise CompiledEvent: CompilerManager, compileProcedures")
+      // println("** raise CompiledEvent: CompilerManager, compileProcedures")
       raiseEvent(new CompiledEvent(proceduresInterface, results.program, null, null))
       true
     } catch {
       case error: CompilerException =>
-      println("** raise CompiledEvent, CompilerException: CompilerManager, compileProcedures")
+      // println("** raise CompiledEvent, CompilerException: CompilerManager, compileProcedures")
         val errorSource = error.filename match {
           case ""          => proceduresInterface
           case "aggregate" => workspace.aggregateManager
@@ -260,7 +260,7 @@ class CompilerManager(val workspace: AbstractWorkspace,
 
   // this returns an error event, if an error was encountered
   private def compileSource(owner: JobOwner): Option[CompiledEvent] = {
-    println("CompilerManager, compileSource")
+    // println("CompilerManager, compileSource")
     try {
       val displayName =
         Some(s"${owner.classDisplayName} '${owner.displayName}'")
@@ -273,23 +273,23 @@ class CompilerManager(val workspace: AbstractWorkspace,
       if (!results.proceduresMap.isEmpty && results.proceduresMap != workspace.procedures) {
         results.head.init(workspace)
         results.head.owner = owner
-        println("** raise CompiledEvent: CompilerManager, compileSource")
+        // println("** raise CompiledEvent: CompilerManager, compileSource")
         raiseEvent(new CompiledEvent(owner, world.program, results.head, null))
       }
       None
     } catch {
       case error: CompilerException => {
-        println("** raise CompiledEvent, CompilerException: CompilerManager, compileSource")
+        // println("** raise CompiledEvent, CompilerException: CompilerManager, compileSource")
         Some(new CompiledEvent(owner, world.program, null, error))
       }
     }
   }
 
   private def compileWidgets(): Unit = {
-    println(">CompilerManager, compileWidgets")
+    //println(">CompilerManager, compileWidgets")
     // handle special case where there are no more widgets.
     if (widgets.isEmpty) {
-      println("** raise CompiledEvent, no more widgets: CompilerManager, compileWidgets")
+      //println("** raise CompiledEvent, no more widgets: CompilerManager, compileWidgets")
       raiseEvent(new CompiledEvent(null, world.program, null, null))
     } else {
       val errorEvents = widgets.foldLeft(Seq[CompiledEvent]()) {
@@ -298,14 +298,14 @@ class CompilerManager(val workspace: AbstractWorkspace,
         case (errors, widget) => errors
       }
       for (event <-errorEvents) {
-        println("** raiseEvent CompilerManager, compileWidgets: " + event)
+        //println("** raiseEvent CompilerManager, compileWidgets: " + event)
         raiseEvent(event)
       }
     }
 
     // Ensure that newly compiled constraints are updated.
     updateInterfaceGlobalConstraints()
-    println("<CompilerManager, compileWidgets")
+    //println("<CompilerManager, compileWidgets")
   }
 
   private def resetWidgetProcedures(): Unit = {

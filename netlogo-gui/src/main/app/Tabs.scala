@@ -170,22 +170,22 @@ class Tabs(val workspace:       GUIWorkspace,
 
 
   def handle(e: CompiledEvent) = {
-     printHandleCompiledEvent(e, "Tabs")
+     //printHandleCompiledEvent(e, "Tabs")
 
     val errorColor = Color.RED
     def clearErrors() = {
-      println("  =clear errors")
+      // println("  =clear errors")
       def clearForeground(tab: Component) = setForegroundAt(indexOfComponent(tab), null)
       forAllCodeTabs(clearForeground)
       //forAllCodeTabs(tab => setForegroundAt(indexOfComponent(tab), null))
     }
     def recolorTab(component: Component, hasError: Boolean): Unit = {
-      println("  =recolorTab, has error: " + hasError)
-      printSwingObject(component, "  =Component")
+      // println("  =recolorTab, has error: " + hasError)
+      // printSwingObject(component, "  =Component")
       setForegroundAt(indexOfComponent(component), if(hasError) errorColor else null)
     }
     def recolorInterfaceTab() = {
-      println("  =recolorInterfaceTab")
+      // println("  =recolorInterfaceTab")
       if (e.error != null) setSelectedIndex(0)
       recolorTab(interfaceTab, e.error != null)
     }
@@ -218,11 +218,11 @@ class Tabs(val workspace:       GUIWorkspace,
         requestFocus()
       case null =>  { // i'm assuming this is only true when we've deleted that last widget.
         //not a great sol'n - AZS 5/16/05
-        println("null sourceOwner")
+        //println("null sourceOwner")
         recolorInterfaceTab()
       }
       case jobWidget: JobWidget if !jobWidget.isCommandCenter => {
-        println("if !jobWidget.isCommandCenter ")
+        //println("if !jobWidget.isCommandCenter ")
         recolorInterfaceTab()
       }
 
@@ -236,7 +236,7 @@ class Tabs(val workspace:       GUIWorkspace,
        e.printStackTrace()
     }
 
-    println("<Tabs CompiledEvent")
+    // println("<Tabs CompiledEvent")
   }
 
   def handle(e: ExternalFileSavedEvent) = {
@@ -294,7 +294,7 @@ class Tabs(val workspace:       GUIWorkspace,
 
     def forAllCodeTabs(fn: CodeTab => Unit) =
       for (tab <- externalFileTabs.asInstanceOf[Set[CodeTab]] + codeTab)  {
-        printSwingObject(tab, "    forall ")
+        //printSwingObject(tab, "    forall ")
         fn
       }
   def lineNumbersVisible = codeTab.lineNumbersVisible
