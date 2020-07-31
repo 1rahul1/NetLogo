@@ -330,6 +330,8 @@ class FileManager(workspace: AbstractWorkspaceScala,
   @throws(classOf[UserCancelException])
   private[app] def saveModel(saveAs: Boolean): Unit = {
     println("***FileManager saveModel")
+    println("code: " + currentModel.code)
+
     val saveThunk = {
       val saveModel = if (saveAs) SaveModelAs else SaveModel
       saveModel(currentModel, modelLoader, controller, workspace, Version)
@@ -337,9 +339,9 @@ class FileManager(workspace: AbstractWorkspaceScala,
 
     // if there's no thunk, the user canceled the save
     saveThunk.foreach { thunk =>
-      println( "SaveModel thunk: " + thunk)
+      //println( "SaveModel thunk: " + thunk)
       val saver = new Saver(thunk)
-      println( "SaveModel saver: " + saver)
+      //println( "SaveModel saver: " + saver)
 
       ModalProgressTask.onUIThread(Hierarchy.getFrame(parent),
         I18N.gui.get("dialog.interface.saving.task"), saver)
@@ -347,7 +349,7 @@ class FileManager(workspace: AbstractWorkspaceScala,
       if (! saver.result.isDefined)
         throw new UserCancelException()
 
-        println(" saver.result" + saver.result)
+      //println(" saver.result" + saver.result)
       saver.result match {
         case Some(Failure(e: Throwable)) =>
           JOptionPane.showMessageDialog(parent,
@@ -386,12 +388,12 @@ class FileManager(workspace: AbstractWorkspaceScala,
       val r = thunk()
       r.foreach { uri =>
         val path = Paths.get(uri).toString
-        println("Savemodel, Saver, path: " + path)
+        //println("Savemodel, Saver, path: " + path)
         modelSaver.setCurrentModel(modelSaver.currentModel.copy(version = Version.version))
-        println("Savemodel, Saver, eventRaiser: " + eventRaiser)
+        //println("Savemodel, Saver, eventRaiser: " + eventRaiser)
         new ModelSavedEvent(path).raise(eventRaiser)
       }
-      println("Savemodel, Saver, r: " + Some(r))
+      //println("Savemodel, Saver, r: " + Some(r))
       result = Some(r)
     }
   }
