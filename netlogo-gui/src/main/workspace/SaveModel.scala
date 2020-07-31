@@ -19,7 +19,6 @@ trait SaveModel {
     controller:     Controller,
     modelTracker:   ModelTracker,
     currentVersion: Version): Option[() => Try[URI]] = {
-      println("SaveModel apply, loader: " + loader)
       val savePath =
         fileFromTracker(modelTracker) orElse validFilePath(controller, loader, modelTracker.getModelType)
       savePath.flatMap { path =>

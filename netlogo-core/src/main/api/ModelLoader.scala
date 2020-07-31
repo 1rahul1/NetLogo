@@ -32,13 +32,8 @@ class FormatterPair[A, B <: ModelFormat[A, B]](
     def load(source: String): Try[Model] =
       modelFormat.load(source, serializers)
 
-    def save(model: Model, uri: URI): Try[URI] = {
-      println("ModelLoader, FormatterPair, save")
-      //println("   model: " + model)
-      println("   uri: " + uri)
+    def save(model: Model, uri: URI): Try[URI] =
       modelFormat.save(model, uri, serializers)
-    }
-
 
     def sourceString(model: Model): Try[String] =
       modelFormat.sourceString(model, serializers)
@@ -83,7 +78,6 @@ trait ModelLoader {
   }
 
   def save(model: Model, uri: URI): Try[URI] = {
-    println("ModelLoader, trait ModelLoader, save")
     val format = formats.find(_.isCompatible(model))
     format match {
       case None =>

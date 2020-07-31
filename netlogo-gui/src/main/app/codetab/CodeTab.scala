@@ -36,8 +36,18 @@ with MenuTab {
     _dirty = b
   }
 
+ 
   private lazy val listener = new TextListener {
-    override def textValueChanged(e: TextEvent) = dirty = true
+    override def textValueChanged(e: TextEvent) = {
+      if (e != null) {
+        println("CodeTab TextListener, text event: e.paramString")
+      } else {
+        if (!dirty) {
+          println("CodeTab TextListener, null, becoming dirty")
+        }
+      }
+      dirty = true
+    }
   }
 
   lazy val editorFactory = new EditorFactory(workspace, workspace.getExtensionManager)
