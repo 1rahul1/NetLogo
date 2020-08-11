@@ -208,9 +208,17 @@ with MenuTab {
   def source = headerSource + innerSource
 
   override def innerSource_=(s: String) = {
+    println("CodeTab, setting inner source: " + s)
     text.setText(s)
     text.setCaretPosition(0)
     text.resetUndoHistory()
+    try {
+      throw new Exception("my exception")
+    }
+    catch {
+      case e: Exception =>
+      e.printStackTrace()
+    }
   }
 
   def select(start: Int, end: Int) = text.select(start, end)

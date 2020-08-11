@@ -51,8 +51,8 @@ with WindowEvents.LoadModelEvent.Handler
 
   def handle(e: WindowEvents.LoadModelEvent) {
     innerSource = e.model.code
-    println("MainCodeTab: LoadModelEvent")
-    println("  =innerSource: " + innerSource)
+    // println("MainCodeTab: LoadModelEvent")
+    //println("  =innerSource: " + innerSource)
     val some = Option(innerSource)
     some match {
       case Some(_) => compile()

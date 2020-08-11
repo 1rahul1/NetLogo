@@ -12,12 +12,15 @@ class ModelSaver(model: ModelSections, loader: ModelLoader) {
   def priorModel: Model = _currentModel
 
   def currentModel = {
+    println("ModelSaver, currentModel, procedureSource: " + model.procedureSource)
+
     val m = _currentModel.copy(
       code         = model.procedureSource,
       widgets      = model.widgets,
       info         = model.info,
       turtleShapes = model.turtleShapes,
       linkShapes   = model.linkShapes)
+      println("ModelSaver, currentModel, copy done")
     if (model.additionalSections.isEmpty)
       m
     else

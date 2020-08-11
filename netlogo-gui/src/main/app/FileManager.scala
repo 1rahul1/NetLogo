@@ -251,7 +251,11 @@ class FileManager(workspace: AbstractWorkspaceScala,
   }
 
   def handle(e: LoadModelEvent): Unit = {
+    if (e != null && e.model != null) {
+          println("1 FileManager LoadModelEvent code: \n" + e.model.code)
+        }
     modelSaver.setCurrentModel(e.model)
+    println("2 FileManager LoadModelEvent curr code: \n" + modelSaver.currentModel.code)
   }
 
   private[app] def aboutToCloseFiles(): Unit = {
@@ -329,8 +333,16 @@ class FileManager(workspace: AbstractWorkspaceScala,
 
   @throws(classOf[UserCancelException])
   private[app] def saveModel(saveAs: Boolean): Unit = {
-    println("***FileManager saveModel")
-    println("code: " + currentModel.code)
+    println("***FileManager, saveModel curr model code \n" + modelSaver.currentModel.code)
+
+    try {
+      //throw new Exception("my exception")
+    }
+    catch {
+     case e: Exception =>
+       e.printStackTrace()
+    }
+
 
     val saveThunk = {
       val saveModel = if (saveAs) SaveModelAs else SaveModel
@@ -339,9 +351,7 @@ class FileManager(workspace: AbstractWorkspaceScala,
 
     // if there's no thunk, the user canceled the save
     saveThunk.foreach { thunk =>
-      //println( "SaveModel thunk: " + thunk)
       val saver = new Saver(thunk)
-      //println( "SaveModel saver: " + saver)
 
       ModalProgressTask.onUIThread(Hierarchy.getFrame(parent),
         I18N.gui.get("dialog.interface.saving.task"), saver)
@@ -349,7 +359,6 @@ class FileManager(workspace: AbstractWorkspaceScala,
       if (! saver.result.isDefined)
         throw new UserCancelException()
 
-      //println(" saver.result" + saver.result)
       saver.result match {
         case Some(Failure(e: Throwable)) =>
           JOptionPane.showMessageDialog(parent,
@@ -385,17 +394,16 @@ class FileManager(workspace: AbstractWorkspaceScala,
     var result = Option.empty[Try[URI]]
 
     def run(): Unit = {
-      val r = thunk()
-      r.foreach { uri =>
-        val path = Paths.get(uri).toString
-        //println("Savemodel, Saver, path: " + path)
-        modelSaver.setCurrentModel(modelSaver.currentModel.copy(version = Version.version))
-        //println("Savemodel, Saver, eventRaiser: " + eventRaiser)
-        new ModelSavedEvent(path).raise(eventRaiser)
+        val r = thunk()
+        r.foreach { uri =>
+          val path = Paths.get(uri).toString
+           println("FileManager Saver run, code: \n" + modelSaver.currentModel.code)
+          modelSaver.setCurrentModel(modelSaver.currentModel.copy(version = Version.version))
+          new ModelSavedEvent(path).raise(eventRaiser)
+        }
+        result = Some(r)
       }
-      //println("Savemodel, Saver, r: " + Some(r))
-      result = Some(r)
-    }
+
   }
 
   def currentModel: Model = modelSaver.currentModel
